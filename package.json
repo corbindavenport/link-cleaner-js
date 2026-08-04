@@ -1,0 +1,31 @@
+{
+  "name": "link-cleaner-js",
+  "version": "0.1.0",
+  "description": "Remove tracking code, search parameters, and other junk from web links.",
+  "keywords": [
+    "link cleaner",
+    "url clean",
+    "clean url",
+    "url",
+    "privacy",
+    "cli"
+  ],
+  "homepage": "https://github.com/corbindavenport/link-cleaner-js#readme",
+  "bugs": {
+    "url": "https://github.com/corbindavenport/link-cleaner-js/issues"
+  },
+  "bin": {
+    "link-cleaner": "src/cli.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/corbindavenport/link-cleaner-js.git"
+  },
+  "license": "MIT",
+  "author": "Corbin Davenport <corbindavenport@outlook.com> (https://corbin.io)",
+  "type": "module",
+  "main": "src/main.js",
+  "scripts": {
+    "test": "echo 'No tests yet'"
+  }
+}
