@@ -4,13 +4,13 @@ export default {
     input: "src/main.js",
     output: [
         {
-            file: "build/linkcleaner.js",
+            file: "dist/linkcleaner.js",
             format: "iife",
             sourcemap: true,
             name: "linkCleaner"
         },
         {
-			file: 'build/linkcleaner.min.js',
+			file: 'dist/linkcleaner.min.js',
 			format: 'iife',
             name: "linkCleaner",
 			sourcemap: true,

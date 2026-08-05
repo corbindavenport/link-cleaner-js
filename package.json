@@ -15,7 +15,7 @@
     "url": "https://github.com/corbindavenport/link-cleaner-js/issues"
   },
   "bin": {
-    "link-cleaner": "src/cli.js"
+    "linkcleaner": "src/cli.js"
   },
   "repository": {
     "type": "git",
