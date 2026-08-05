@@ -1,29 +1,6 @@
 #!/usr/bin/env node
 
-import { clean } from "./main.js";
-
-/**
- * Get the list of arguments from command line and parse them as an object.
- * @returns {object}
- */
-function getArgs() {
-    const array = process.argv;
-    const result = {};
-    for (let i = 0; i < array.length; i++) {
-        const currentItem = array[i];
-        if (currentItem.startsWith('-')) {
-            // Remove all leading dashes
-            const cleanKey = currentItem.replace(/^-+/, '');
-            // Get the value and store it
-            const nextValue = array[i + 1];
-            result[cleanKey] = nextValue;
-        } else {
-            // If there's an argument without a leading dash, assume it's the input URL
-            result["i"] = currentItem;
-        }
-    }
-    return result;
-}
+import { clean, asyncClean } from "./main.js";
 
 /**
  * Show help information in the console.
@@ -36,13 +13,26 @@ function showHelp() {
 /**
  * Main function
  */
-function main() {
-    const args = getArgs();
-    if (args.hasOwnProperty("help")) {
-        // Print help if requested
+async function main() {
+    let inputLink;
+    let argList = [];
+    for (const arg of process.argv) {
+        if (arg.trim().startsWith("http")) {
+            inputLink = arg;
+        } else if (arg.trim().startsWith("-")) {
+            argList.push(arg);
+        }
+    }
+    if (argList.includes("-h") || argList.includes("--help")) {
+        // Show help
         showHelp();
-    } else if (args?.i) {
-        const link = clean(args.i).toString();
+    } else if (argList.includes("-u") || argList.includes("--unshorten")) {
+        // Unshorten and clean the link
+        const link = await asyncClean(inputLink);
+        console.log(link.toString());
+    } else if (inputLink) {
+        // Clean the link without unshortening
+        const link = clean(inputLink).toString();
         console.log(link);
     } else {
         showHelp();
@@ -58,5 +48,5 @@ process.on("SIGINT", gracefulShutdown);
 process.on("SIGTERM", gracefulShutdown);
 
 // Start main process
-main();
+await main();
 gracefulShutdown();

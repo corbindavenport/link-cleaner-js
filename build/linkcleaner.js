@@ -173,6 +173,32 @@ var linkCleaner = (function (exports) {
         return newLink;
     }
 
+    /**
+     * Follows all redirects for the provided link, then cleans the link with the provided settings. This is required for URLs created by link shorteners like `bit.ly` or `tinyurl.com`, or other links that completely hide the destination.
+     * 
+     * This requires a Fetch request to the original URL, so it will not work in environments that enforce Cross-Origin Resource Sharing (CORS).
+     * @param {string | URL} link - The URL input, either as a string or a URL object.
+     * @param {LinkSettings} [linkSettings] - Settings for cleaning the link.
+     * @returns {URL} The cleaned link as a URL object. Use `.toString()` afterwards to get the full string.
+     */
+    async function asyncClean(link, linkSettings) {
+        // Follow network request
+        let response;
+        try {
+            response = await fetch(link, {
+                method: "HEAD"
+            });
+            if (!response.ok) {
+                throw new Error(`HTTP Error: ${response.status} ${response.statusText}`);
+            }
+        } catch (error) {
+            throw error;
+        }
+        // Clean the link
+        return clean(response.url, linkSettings);
+    }
+
+    exports.asyncClean = asyncClean;
     exports.clean = clean;
 
     return exports;
