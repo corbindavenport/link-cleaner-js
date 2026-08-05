@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 
-import { cleanLink } from "./main.js";
+import { clean } from "./main.js";
 
 /**
  * Get the list of arguments from command line and parse them as an object.
@@ -42,7 +42,7 @@ function main() {
         // Print help if requested
         showHelp();
     } else if (args?.i) {
-        const link = cleanLink(args.i).toString();
+        const link = clean(args.i).toString();
         console.log(link);
     } else {
         showHelp();

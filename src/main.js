@@ -22,7 +22,7 @@
  * @param {LinkSettings} [linkSettings] - Settings for cleaning the link.
  * @returns {URL} The cleaned link as a URL object. Use `.toString()` afterwards to get the full string.
  */
-export function cleanLink(link, linkSettings) {
+export function clean(link, linkSettings) {
     let oldLink;
     if (typeof link === 'object' && link !== null && 'href' in link) {
         oldLink = link;

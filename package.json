@@ -26,6 +26,11 @@
   "type": "module",
   "main": "src/main.js",
   "scripts": {
-    "test": "echo 'No tests yet'"
+    "test": "node src/cli.js 'https://youtu.be/21oks06J5Wk?si=uQ9j2Wfxnh8dkDFQ&t=75'",
+    "build": "npx rollup -c"
+  },
+  "devDependencies": {
+    "rollup": "4.62.4",
+    "@rollup/plugin-terser": "1.0.0"
   }
 }
