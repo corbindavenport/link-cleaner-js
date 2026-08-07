@@ -182,9 +182,7 @@ export async function asyncClean(link, linkSettings) {
     // Follow network request
     let response;
     try {
-        response = await fetch(link, {
-            method: "HEAD"
-        });
+        response = await fetch(link, { method: "GET" });
         if (!response.ok) {
             throw new Error(`HTTP Error: ${response.status} ${response.statusText}`);
         }
