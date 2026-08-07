@@ -201,12 +201,16 @@ export async function asyncClean(link, linkSettings) {
         link.includes("=amp")
     );
     if (isAmpUrl) {
-        const result = await response.text();
-        // Find href attribute value in <link rel="canonical"> tag
-        const canonicalRegex = /href\s*=\s*(?:["']([^"']*?)["']|([^\s>]+))/i;
-        const match = canonicalRegex.exec(result);
-        if (match) {
-            finalLink = match[1] || match[2];
+        try {
+            const result = await response.text();
+            // Find href attribute value in <link rel="canonical"> tag
+            const canonicalRegex = /href\s*=\s*(?:["']([^"']*?)["']|([^\s>]+))/i;
+            const match = canonicalRegex.exec(result);
+            if (match) {
+                finalLink = match[1] || match[2];
+            }
+        } catch {
+            // Fail silently and continue with the original URL
         }
     }
     // Clean the link
