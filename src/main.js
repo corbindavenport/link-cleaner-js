@@ -190,24 +190,21 @@ export async function asyncClean(link, linkSettings) {
         throw error;
     }
     finalLink = response.url;
-    // Get the original URL for Accelerated Mobile Pages (AMP)
-    // Documentation: https://developers.googleblog.com/whats-in-an-amp-url/
-    const isAmpUrl = (
-        // AMP example 1: https://variety.com/2023/film/news/oscar-nominations-2023-list-1235495072/amp/
-        link.includes("/amp") ||
-        // AMP example 2: https://www.businessinsider.com/trump-vance-no-vp-debate-until-harris-picks-running-mate-2024-7?amp
-        link.includes("?amp") ||
-        // AMP example 3: https://www.kiro7.com/news/local/weekend-weather-air-quality-improves-red-flag-warnings-remain-effect/K33XVPNDMNHH7MYXD3Y3QHRST4/?outputType=amp
-        link.includes("=amp")
-    );
-    if (isAmpUrl) {
+    // Try to parse HTML from response for additional checks
+    let result = "";
+    if (response.headers.get("content-type").toLowerCase().startsWith("text/html")) {
         try {
-            const result = await response.text();
-            // Find href attribute value in <link rel="canonical"> tag
-            const canonicalRegex = /href\s*=\s*(?:["']([^"']*?)["']|([^\s>]+))/i;
-            const match = canonicalRegex.exec(result);
-            if (match) {
-                finalLink = match[1] || match[2];
+            result = await response.text();
+            // Get the original URL for Accelerated Mobile Pages (AMP)
+            // Documentation: https://amp.dev/documentation/guides-and-tutorials/learn/spec/amphtml
+            const ampRegex = /<html ⚡|<html amp/i;
+            if (ampRegex.exec(result)) {
+                // Find href attribute value in <link rel="canonical"> tag
+                const canonicalRegex = /href\s*=\s*(?:["']([^"']*?)["']|([^\s>]+))/i;
+                const match = canonicalRegex.exec(result);
+                if (match) {
+                    finalLink = match[1] || match[2];
+                }
             }
         } catch {
             // Fail silently and continue with the original URL
