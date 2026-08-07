@@ -174,7 +174,7 @@ var linkCleaner = (function (exports) {
     }
 
     /**
-     * Follows all redirects for the provided link, then cleans the link with the provided settings. This is required for URLs created by link shorteners like `bit.ly` or `tinyurl.com`, or other links that completely hide the destination.
+     * Follows all redirects for the provided link, then cleans the link with the provided settings. This is required for URLs created by link shorteners like `bit.ly` or `tinyurl.com`, AMP links, or other URLs that completely hide the destination.
      * 
      * This requires a Fetch request to the original URL, so it will not work in environments that enforce Cross-Origin Resource Sharing (CORS).
      * @param {string | URL} link - The URL input, either as a string or a URL object.
@@ -183,7 +183,7 @@ var linkCleaner = (function (exports) {
      */
     async function asyncClean(link, linkSettings) {
         // Follow network request
-        let response;
+        let response, finalLink;
         try {
             response = await fetch(link, { method: "GET" });
             if (!response.ok) {
@@ -192,8 +192,32 @@ var linkCleaner = (function (exports) {
         } catch (error) {
             throw error;
         }
+        finalLink = response.url;
+        // Get the original URL for Accelerated Mobile Pages (AMP)
+        // Documentation: https://developers.googleblog.com/whats-in-an-amp-url/
+        const isAmpUrl = (
+            // AMP example 1: https://variety.com/2023/film/news/oscar-nominations-2023-list-1235495072/amp/
+            link.includes("/amp") ||
+            // AMP example 2: https://www.businessinsider.com/trump-vance-no-vp-debate-until-harris-picks-running-mate-2024-7?amp
+            link.includes("?amp") ||
+            // AMP example 3: https://www.kiro7.com/news/local/weekend-weather-air-quality-improves-red-flag-warnings-remain-effect/K33XVPNDMNHH7MYXD3Y3QHRST4/?outputType=amp
+            link.includes("=amp")
+        );
+        if (isAmpUrl) {
+            try {
+                const result = await response.text();
+                // Find href attribute value in <link rel="canonical"> tag
+                const canonicalRegex = /href\s*=\s*(?:["']([^"']*?)["']|([^\s>]+))/i;
+                const match = canonicalRegex.exec(result);
+                if (match) {
+                    finalLink = match[1] || match[2];
+                }
+            } catch {
+                // Fail silently and continue with the original URL
+            }
+        }
         // Clean the link
-        return clean(response.url, linkSettings);
+        return clean(finalLink, linkSettings);
     }
 
     exports.asyncClean = asyncClean;
