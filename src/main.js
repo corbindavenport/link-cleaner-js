@@ -3,8 +3,8 @@
  * @property {boolean} [convertYouTubeShorts] - If YouTube Shorts links should be converted to regular YouTube video links.
  * @property {boolean} [convertYouTubeMusic] - If YouTube Music (music.youtube.com) links should be converted to regular YouTube (youtube.com) links.
  * @property {boolean} [shortenYouTube] - If YouTube links should be shortened to the youtu.be/wAUK9hVgmNI format. This also applies to YouTube Shorts if `convertYouTubeShorts` is `true`, and music tracks and episodes from YouTube Music if `convertYouTubeMusic` is `true`.
- * @property {boolean} [shortenTwitter] - If posts from Twitter/X should be converted to FxEmbed links. More information: https://github.com/FxEmbed/FxEmbed
- * @property {boolean} [shortenBluesky] - If posts from Bluesky should be converted to FxEmbed links. More information: https://github.com/FxEmbed/FxEmbed
+ * @property {boolean} [fixTwitter] - If posts from Twitter/X should be converted to FxEmbed links. More information: https://github.com/FxEmbed/FxEmbed
+ * @property {boolean} [fixBluesky] - If posts from Bluesky should be converted to FxEmbed links. More information: https://github.com/FxEmbed/FxEmbed
  * @property {boolean} [shortenWalmart] - If product links from Walmart should be shortened.
  * @property {string} [amazonId] - The Amazon affiliate tracking ID added to the end of any Amazon store links. More information: https://affiliate-program.amazon.com/help/node/topic/GK5TZZ4AWML2QSLA
  */
@@ -147,11 +147,11 @@ export function clean(link, linkSettings) {
         newLink.searchParams.append('episode_no', oldLink.searchParams.get('episode_no'));
     }
     // Replace Twitter/X links with FxEmbed if enabled
-    if (linkSettings?.shortenTwitter && ((oldLink.host === 'twitter.com') || (oldLink.host === 'x.com'))) {
+    if (linkSettings?.fixTwitter && ((oldLink.host === 'twitter.com') || (oldLink.host === 'x.com'))) {
         newLink.host = 'fxtwitter.com';
     }
     // Replace Bluesky links with FxEmbed if enabled
-    if (linkSettings?.shortenBluesky && ((oldLink.host === 'bsky.app') && (oldLink.pathname.includes('/post/')))) {
+    if (linkSettings?.fixBluesky && ((oldLink.host === 'bsky.app') && (oldLink.pathname.includes('/post/')))) {
         newLink.host = 'fxbsky.app';
     }
     // Shorten Walmart links if enabled (#41)
