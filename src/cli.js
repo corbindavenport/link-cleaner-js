@@ -51,8 +51,8 @@ async function main() {
         showHelp();
     } else if (argList.includes("-u") || argList.includes("--unshorten")) {
         // Unshorten and clean the link
-        const link = await asyncClean(inputLink);
-        console.log(link.toString(), options);
+        const link = await asyncClean(inputLink, options);
+        console.log(link.toString());
     } else if (inputLink) {
         // Clean the link without unshortening
         const link = clean(inputLink, options);
