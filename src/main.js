@@ -5,7 +5,6 @@
  * @property {boolean} [shortenYouTube] - If YouTube links should be shortened to the youtu.be/wAUK9hVgmNI format. This also applies to YouTube Shorts if `convertYouTubeShorts` is `true`, and music tracks and episodes from YouTube Music if `convertYouTubeMusic` is `true`.
  * @property {boolean} [fixTwitter] - If posts from Twitter/X should be converted to FxEmbed links. More information: https://github.com/FxEmbed/FxEmbed
  * @property {boolean} [fixBluesky] - If posts from Bluesky should be converted to FxEmbed links. More information: https://github.com/FxEmbed/FxEmbed
- * @property {boolean} [shortenWalmart] - If product links from Walmart should be shortened.
  * @property {string} [amazonId] - The Amazon affiliate tracking ID added to the end of any Amazon store links. More information: https://affiliate-program.amazon.com/help/node/topic/GK5TZZ4AWML2QSLA
  */
 
@@ -153,8 +152,8 @@ export function clean(link, linkSettings) {
     } else if (linkSettings?.fixBluesky && ((oldLink.host === 'bsky.app') && (oldLink.pathname.includes('/post/')))) {
         // Replace Bluesky links with FxEmbed if enabled
         newLink.host = 'fxbsky.app';
-    } else if (linkSettings?.shortenWalmart && (oldLink.host === 'www.walmart.com') && oldLink.pathname.includes('/ip/')) {
-        // Shorten Walmart links if enabled
+    } else if ((oldLink.host === 'www.walmart.com') && oldLink.pathname.includes('/ip/')) {
+        // Remove extra information for Walmart shopping links
         // Example input: https://www.walmart.com/ip/Lenovo-LOQ-15-6-FHD-144Hz-Gaming-Notebook-Ryzen-7-7435HS-16GB-RAM-512GB-SSD-NVIDIA-GeForce-RTX-4070-Luna-Grey-Octa-Core-Display-Ram/13376108763?classType=REGULAR&athbdg=L1800
         var regex = /\/ip\/.*\/(\d+)/;
         var productID = oldLink.pathname.match(regex);

@@ -15,7 +15,6 @@ Usage: linkcleaner [options...] <url>
  -y, --ytshorten       Shorten all YouTube links to youtu.be URLs
  -t, --twitter         Convert Twitter/X links to FxEmbed links
  -b, --bluesky         Convert Bluesky links to FxEmbed links
- -w, --walmart         Shorten product links from Walmart.com
  -h, --help            Show this help page
 
 More info: https://github.com/corbindavenport/link-cleaner-js
@@ -80,8 +79,7 @@ async function main() {
         convertYouTubeMusic: (argList.includes("-m") || argList.includes("--ytmusic") || false),
         shortenYouTube: (argList.includes("-y") || argList.includes("--ytshorten") || false),
         fixTwitter: (argList.includes("-t") || argList.includes("--twitter") || false),
-        fixBluesky: (argList.includes("-b") || argList.includes("--bluesky") || false),
-        shortenWalmart: (argList.includes("-w") || argList.includes("--walmart") || false)
+        fixBluesky: (argList.includes("-b") || argList.includes("--bluesky") || false)
     }
     if (argList.includes("-h") || argList.includes("--help")) {
         // Show help
