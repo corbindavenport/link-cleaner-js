@@ -24,6 +24,34 @@ const youtubeDomains = [
     "youtu.be"
 ];
 
+// List of Amazon store domains
+const amazonDomains = [
+    "www.amazon.com.au",
+    "www.amazon.com.be",
+    "www.amazon.com.br",
+    "www.amazon.ca",
+    "www.amazon.cn",
+    "www.amazon.eg",
+    "www.amazon.fr",
+    "www.amazon.de",
+    "www.amazon.in",
+    "www.amazon.ie",
+    "www.amazon.it",
+    "www.amazon.co.jp",
+    "www.amazon.com.mx",
+    "www.amazon.nl",
+    "www.amazon.pl",
+    "www.amazon.sa",
+    "www.amazon.sg",
+    "www.amazon.co.za",
+    "www.amazon.es",
+    "www.amazon.se",
+    "www.amazon.com.tr",
+    "www.amazon.ae",
+    "www.amazon.co.uk",
+    "www.amazon.com"
+];
+
 /**
  * Cleans a link with the provided settings.
  * @param {string | URL} link - The URL input, either as a string or a URL object.
@@ -107,9 +135,8 @@ export function clean(link, linkSettings) {
         // Don't remove required variables for Facebook links
         newLink.searchParams.append('story_fbid', oldLink.searchParams.get('story_fbid'));
         newLink.searchParams.append('id', oldLink.searchParams.get('id'));
-    } else if (oldLink.host.includes('amazon')) {
+    } else if (amazonDomains.includes(oldLink.host)) {
         // Remove extra information for Amazon shopping links
-        // Amazon has a lot of country-specific domains that are subject to change, so this just matches "amazon" along with a known product URL path
         if (oldLink.pathname.includes('/dp/') || oldLink.pathname.includes('/d/') || oldLink.pathname.includes('/product/')) {
             newLink.hostname = newLink.hostname.replace('www.', '');
             // Find product ID
