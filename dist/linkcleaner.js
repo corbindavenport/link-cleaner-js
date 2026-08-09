@@ -8,7 +8,6 @@ var linkCleaner = (function (exports) {
      * @property {boolean} [shortenYouTube] - If YouTube links should be shortened to the youtu.be/wAUK9hVgmNI format. This also applies to YouTube Shorts if `convertYouTubeShorts` is `true`, and music tracks and episodes from YouTube Music if `convertYouTubeMusic` is `true`.
      * @property {boolean} [fixTwitter] - If posts from Twitter/X should be converted to FxEmbed links. More information: https://github.com/FxEmbed/FxEmbed
      * @property {boolean} [fixBluesky] - If posts from Bluesky should be converted to FxEmbed links. More information: https://github.com/FxEmbed/FxEmbed
-     * @property {boolean} [shortenWalmart] - If product links from Walmart should be shortened.
      * @property {string} [amazonId] - The Amazon affiliate tracking ID added to the end of any Amazon store links. More information: https://affiliate-program.amazon.com/help/node/topic/GK5TZZ4AWML2QSLA
      */
 
@@ -18,6 +17,43 @@ var linkCleaner = (function (exports) {
      * @property {string} urlString - The cleaned URL as a string.
      * @property {URL} urlObject - The cleaned URL as a native JavaScript URL object.
      */
+
+    // List of YouTube and YouTube Music domains
+    const youtubeDomains = [
+        "www.youtube.com",
+        "youtube.com",
+        "m.youtube.com",
+        "music.youtube.com",
+        "youtu.be"
+    ];
+
+    // List of Amazon store domains
+    const amazonDomains = [
+        "www.amazon.com.au",
+        "www.amazon.com.be",
+        "www.amazon.com.br",
+        "www.amazon.ca",
+        "www.amazon.cn",
+        "www.amazon.eg",
+        "www.amazon.fr",
+        "www.amazon.de",
+        "www.amazon.in",
+        "www.amazon.ie",
+        "www.amazon.it",
+        "www.amazon.co.jp",
+        "www.amazon.com.mx",
+        "www.amazon.nl",
+        "www.amazon.pl",
+        "www.amazon.sa",
+        "www.amazon.sg",
+        "www.amazon.co.za",
+        "www.amazon.es",
+        "www.amazon.se",
+        "www.amazon.com.tr",
+        "www.amazon.ae",
+        "www.amazon.co.uk",
+        "www.amazon.com"
+    ];
 
     /**
      * Cleans a link with the provided settings.
@@ -50,6 +86,9 @@ var linkCleaner = (function (exports) {
         } else if ((oldLink.host === 'www.google.com') && (oldLink.pathname === '/url') && (oldLink.searchParams.has('url'))) {
             // Fix for redirect links from Google Search (#29)
             oldLink = new URL(oldLink.searchParams.get('url'));
+        } else if ((oldLink.host === 'cts.businesswire.com') && oldLink.searchParams.has('url')) {
+            // Fix BusinessWire external link redirects
+            oldLink = new URL(oldLink.searchParams.get('url'));
         }
         // Generate new link
         var newLink = new URL(oldLink.origin + oldLink.pathname);
@@ -57,117 +96,100 @@ var linkCleaner = (function (exports) {
         if (oldLink.searchParams.has('q')) {
             newLink.searchParams.append('q', oldLink.searchParams.get('q'));
         }
-        // Don't remove ID parameter for Google Play links (#34)
+        // Site-specific overrides
         if ((oldLink.host === 'play.google.com') && oldLink.searchParams.has('id')) {
+            // Don't remove ID parameter for Google Play links
+            // Example: https://play.google.com/store/apps/details?id=com.microsoft.outlooklite
             newLink.searchParams.append('id', oldLink.searchParams.get('id'));
-        }
-        // Don't remove ID parameter for Macy's links (#21)
-        if ((oldLink.host === 'www.macys.com') && oldLink.searchParams.has('ID')) {
+        } else if ((oldLink.host === 'www.macys.com') && oldLink.searchParams.has('ID')) {
+            // Don't remove ID parameter for Macy's links
+            // Example: https://www.macys.com/shop/product/anthony-veer-mens-roosevelt-ii-double-monk-strap-goodyear-welt-dress-shoe?ID=10920481
             newLink.searchParams.append('ID', oldLink.searchParams.get('ID'));
-        }
-        // Detect YouTube domains and video IDs
-        // Regex demo: https://regex101.com/r/0Plpyd/1
-        const youtubeDomains = [
-            "www.youtube.com",
-            "youtube.com",
-            "m.youtube.com",
-            "music.youtube.com",
-            "youtu.be"
-        ];
-        const youtubeRegex = /^.*(youtu\.be\/|embed\/|shorts\/|\?v=|\&v=)(?<videoID>[^#\&\?]*).*/;
-        // Restore video parameter on YouTube links
-        if (youtubeDomains.includes(oldLink.host) && oldLink.searchParams.has('v')) {
-            newLink.searchParams.append('v', oldLink.searchParams.get('v'));
-        }
-        // Restore time parameter on YouTube links
-        if (youtubeDomains.includes(oldLink.host) && oldLink.searchParams.has('t')) {
-            newLink.searchParams.append('t', oldLink.searchParams.get('t'));
-        }
-        // Restore list ID for YouTube playlist links (#37)
-        if (youtubeDomains.includes(oldLink.host) && oldLink.pathname.includes('playlist') && oldLink.searchParams.has('list')) {
-            newLink.searchParams.append('list', oldLink.searchParams.get('list'));
-        }
-        // Convert YouTube Shorts links to regular video links, if the setting is enabled (#60)
-        if (youtubeDomains.includes(oldLink.host) && oldLink.pathname.startsWith("/shorts/") && linkSettings?.convertYouTubeShorts) {
-            var videoId = youtubeRegex.exec(oldLink.href)['groups']['videoID'];
-            newLink = new URL("https://youtube.com/watch?v=" + videoId);
-        }
-        // Convert YouTube Music links to YouTube links, if enabled (#61)
-        if (oldLink.host === "music.youtube.com" && linkSettings?.convertYouTubeMusic) {
-            newLink.host = "youtube.com";
-        }
-        // Shorten YouTube video links (or anything already converted to one), if the setting is enabled
-        if (youtubeDomains.includes(oldLink.host) && (oldLink.searchParams.has('v') || oldLink.pathname.startsWith("/shorts")) && linkSettings?.shortenYouTube) {
-            var videoId = youtubeRegex.exec(oldLink.href)['groups']['videoID'];
-            newLink = new URL('https://youtu.be/' + videoId);
-        }
-        // Don't remove required variables for Facebook links
-        if ((oldLink.host === 'www.facebook.com') && oldLink.pathname.includes('story.php')) {
+        } else if (youtubeDomains.includes(oldLink.host)) {
+            // Regex to find video ID in a YouTube URL, demo: https://regex101.com/r/0Plpyd/1
+            const youtubeRegex = /^.*(youtu\.be\/|embed\/|shorts\/|\?v=|\&v=)(?<videoID>[^#\&\?]*).*/;
+            // Restore video parameter on YouTube links
+            if (oldLink.searchParams.has('v')) {
+                newLink.searchParams.append('v', oldLink.searchParams.get('v'));
+            }
+            // Restore time parameter on YouTube links
+            if (oldLink.searchParams.has('t')) {
+                newLink.searchParams.append('t', oldLink.searchParams.get('t'));
+            }
+            // Restore list ID for YouTube playlist links
+            if (oldLink.pathname.includes('playlist') && oldLink.searchParams.has('list')) {
+                newLink.searchParams.append('list', oldLink.searchParams.get('list'));
+            }
+            // Convert YouTube Shorts links to regular video links, if the setting is enabled (#60)
+            if (oldLink.pathname.startsWith("/shorts/") && linkSettings?.convertYouTubeShorts) {
+                var videoId = youtubeRegex.exec(oldLink.href)['groups']['videoID'];
+                newLink = new URL("https://youtube.com/watch?v=" + videoId);
+            }
+            // Convert YouTube Music links to YouTube links, if enabled
+            if (oldLink.host === "music.youtube.com" && linkSettings?.convertYouTubeMusic) {
+                newLink.host = "youtube.com";
+            }
+            // Shorten YouTube video links (or anything already converted to one), if the setting is enabled
+            if ((oldLink.searchParams.has('v') || oldLink.pathname.startsWith("/shorts")) && linkSettings?.shortenYouTube) {
+                var videoId = youtubeRegex.exec(oldLink.href)['groups']['videoID'];
+                newLink = new URL('https://youtu.be/' + videoId);
+            }
+        } else if ((oldLink.host === 'www.facebook.com') && oldLink.pathname.includes('story.php')) {
+            // Don't remove required variables for Facebook links
             newLink.searchParams.append('story_fbid', oldLink.searchParams.get('story_fbid'));
             newLink.searchParams.append('id', oldLink.searchParams.get('id'));
-        }
-        // Remove extra information for Amazon shopping links
-        // Amazon has a lot of country-specific domains that are subject to change, so this just matches "amazon" along with a known product URL path
-        if (oldLink.host.includes('amazon') && (oldLink.pathname.includes('/dp/') || oldLink.pathname.includes('/d/') || oldLink.pathname.includes('/product/'))) {
-            // Amazon doesn't need the www subdomain
-            newLink.hostname = newLink.hostname.replace('www.', '');
-            // Find product ID
-            var regex = /(?:\/dp\/|\/product\/|\/d\/)(\w*|\d*)/g;
-            var match = regex.exec(oldLink.pathname);
-            if (match && match[1]) {
-                newLink.pathname = '/dp/' + match[1];
+        } else if (amazonDomains.includes(oldLink.host)) {
+            // Remove extra information for Amazon shopping links
+            if (oldLink.pathname.includes('/dp/') || oldLink.pathname.includes('/d/') || oldLink.pathname.includes('/product/')) {
+                newLink.hostname = newLink.hostname.replace('www.', '');
+                // Find product ID
+                var regex = /(?:\/dp\/|\/product\/|\/d\/)(\w*|\d*)/g;
+                var match = regex.exec(oldLink.pathname);
+                if (match && match[1]) {
+                    newLink.pathname = '/dp/' + match[1];
+                }
             }
-        }
-        // Fix Lenovo store links (#36)
-        if ((oldLink.host === 'www.lenovo.com') && oldLink.searchParams.has('bundleId')) {
+            // Add Amazon affiliate code if enabled
+            if (linkSettings?.amazonId) {
+                newLink.searchParams.append('tag', linkSettings.amazonId);
+            }
+        } else if ((oldLink.host === 'www.lenovo.com') && oldLink.searchParams.has('bundleId')) {
+            // Fix Lenovo store bundle links
             newLink.searchParams.append('bundleId', oldLink.searchParams.get('bundleId'));
-        }
-        // Shorten Best Buy product links (#42)
-        if ((oldLink.host === 'www.bestbuy.com') && oldLink.pathname.includes('.p')) {
+        } else if ((oldLink.host === 'www.bestbuy.com') && oldLink.pathname.includes('.p')) {
+            // Shorten Best Buy product links
+            // Example input: https://www.bestbuy.com/site/microsoft-xbox-series-x-2tb-console-galaxy-black-special-edition/6595698.p?skuId=6595698
             var regex = /\/(\d+)\.p/;
             var productID = oldLink.pathname.match(regex);
             if (productID) {
                 newLink.pathname = '/site/' + productID[1] + '.p';
             }
-        }
-        // Allow Xiaohongshu links to be viewed without an account (#47)
-        if ((oldLink.host === 'www.xiaohongshu.com') && oldLink.searchParams.has('xsec_token')) {
+        } else if ((oldLink.host === 'www.xiaohongshu.com') && oldLink.searchParams.has('xsec_token')) {
+            // Allow Xiaohongshu links to be viewed without an account
             newLink.searchParams.append('xsec_token', oldLink.searchParams.get('xsec_token'));
-        }
-        // Fix Apple Weather alert links (#46)
-        if (oldLink.host === 'weatherkit.apple.com') {
+        } else if (oldLink.host === 'weatherkit.apple.com') {
+            // Fix Apple Weather alert links
             newLink.searchParams.append('lang', oldLink.searchParams.get('lang'));
             newLink.searchParams.append('party', oldLink.searchParams.get('party'));
             newLink.searchParams.append('ids', oldLink.searchParams.get('ids'));
-        }
-        // Fix BusinessWire tracking links (#39)
-        if ((oldLink.host === 'cts.businesswire.com') && oldLink.searchParams.has('url')) {
-            newLink = new URL(oldLink.searchParams.get('url'));
-        }
-        // Fix Webtoon links (#50)
-        if ((oldLink.host === 'www.webtoons.com') && oldLink.searchParams.has('title_no') && oldLink.searchParams.has('episode_no')) {
+        } else if ((oldLink.host === 'www.webtoons.com') && oldLink.searchParams.has('title_no') && oldLink.searchParams.has('episode_no')) {
+            // Fix Webtoon links
             newLink.searchParams.append('title_no', oldLink.searchParams.get('title_no'));
             newLink.searchParams.append('episode_no', oldLink.searchParams.get('episode_no'));
-        }
-        // Replace Twitter/X links with FxEmbed if enabled
-        if (linkSettings?.fixTwitter && ((oldLink.host === 'twitter.com') || (oldLink.host === 'x.com'))) {
+        } else if (linkSettings?.fixTwitter && ((oldLink.host === 'twitter.com') || (oldLink.host === 'x.com'))) {
+            // Replace Twitter/X links with FxEmbed if enabled
             newLink.host = 'fxtwitter.com';
-        }
-        // Replace Bluesky links with FxEmbed if enabled
-        if (linkSettings?.fixBluesky && ((oldLink.host === 'bsky.app') && (oldLink.pathname.includes('/post/')))) {
+        } else if (linkSettings?.fixBluesky && ((oldLink.host === 'bsky.app') && (oldLink.pathname.includes('/post/')))) {
+            // Replace Bluesky links with FxEmbed if enabled
             newLink.host = 'fxbsky.app';
-        }
-        // Shorten Walmart links if enabled (#41)
-        if (linkSettings?.shortenWalmart && (oldLink.host === 'www.walmart.com') && oldLink.pathname.includes('/ip/')) {
+        } else if ((oldLink.host === 'www.walmart.com') && oldLink.pathname.includes('/ip/')) {
+            // Remove extra information for Walmart shopping links
+            // Example input: https://www.walmart.com/ip/Lenovo-LOQ-15-6-FHD-144Hz-Gaming-Notebook-Ryzen-7-7435HS-16GB-RAM-512GB-SSD-NVIDIA-GeForce-RTX-4070-Luna-Grey-Octa-Core-Display-Ram/13376108763?classType=REGULAR&athbdg=L1800
             var regex = /\/ip\/.*\/(\d+)/;
             var productID = oldLink.pathname.match(regex);
             if (productID) {
                 newLink.pathname = '/ip/' + productID[1];
             }
-        }
-        // Add Amazon affiliate code if enabled
-        if (oldLink.host.includes('amazon') && linkSettings?.amazonId) {
-            newLink.searchParams.append('tag', linkSettings.amazonId);
         }
         // Return the output
         return newLink;

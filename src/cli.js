@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 
-import { clean, asyncClean } from "./main.js";
+import { clean, cleanAsync } from "./main.js";
 
 /**
  * Show help information in the console.
@@ -86,7 +86,7 @@ async function main() {
         showHelp();
     } else if (argList.includes("-u") || argList.includes("--unshorten")) {
         // Unshorten and clean the link
-        const link = await asyncClean(inputLink, options);
+        const link = await cleanAsync(inputLink, options);
         console.log(link.toString());
     } else if (inputLink) {
         // Clean the link without unshortening

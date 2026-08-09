@@ -200,7 +200,7 @@ export function clean(link, linkSettings) {
  * @param {LinkSettings} [linkSettings] - Settings for cleaning the link.
  * @returns {URL} The cleaned link as a URL object. Use `.toString()` afterwards to get the full string.
  */
-export async function asyncClean(link, linkSettings) {
+export async function cleanAsync(link, linkSettings) {
     // Follow network request
     let response, finalLink;
     try {
