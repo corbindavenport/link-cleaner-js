@@ -149,14 +149,16 @@ let link = linkCleaner.clean("https://music.youtube.com/watch?v=Gyk5F5gYKzY", {
 })
 ```
 
-There is also a `cleanAsync()` function, which attempts to un-shorten the input URL first, then cleans the result. This is required for `bit.ly` URLs, Reddit's `/s` post links, and other URLs that completely obscure the destination:
+There is also a `cleanAsync()` function, which attempts to un-shorten the input URL first, then cleans the result. It's a Promise function that must be called with `await`, since it makes a GET request to the target URL.
+
+This mode is required for `bit.ly` URLs, Reddit's `/s` post links, and other URLs that completely obscure the destination:
 
 ```js
 let link = linkCleaner.clean("https://www.reddit.com/r/vscode/s/y8wM23uuT3");
 // Output: https://www.reddit.com/r/vscode/s/y8wM23uuT3
 
-let link = linkCleaner.cleanAsync("https://www.reddit.com/r/vscode/s/y8wM23uuT3");
+let link = await linkCleaner.cleanAsync("https://www.reddit.com/r/vscode/s/y8wM23uuT3");
 // Output: https://www.reddit.com/r/vscode/comments/1uxx68q/visual_studio_code_1129_release_notes/
 ```
 
-The `cleanAsync()` function requires a GET request to the URL, so it will not work in a standard web browser due to [CORS restrictions](https://developer.mozilla.org/en-US/docs/Web/HTTP/Guides/CORS). You can use it in a WebExtension (with permissions for the input domain) or Node project, though.
+This will not work in a standard web browser due to [CORS restrictions](https://developer.mozilla.org/en-US/docs/Web/HTTP/Guides/CORS). You can use it in a WebExtension (with permissions for the input domain) or Node project, though.
