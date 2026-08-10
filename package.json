@@ -16,7 +16,7 @@
     "LICENSE",
     "README.md",
     "rollup.config.js"
-  ]
+  ],
   "homepage": "https://github.com/corbindavenport/link-cleaner-js#readme",
   "bugs": {
     "url": "https://github.com/corbindavenport/link-cleaner-js/issues"
