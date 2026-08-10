@@ -144,7 +144,7 @@ You can pass options to it in the second parameter, like this:
 
 ```js
 let link = linkCleaner.clean("https://music.youtube.com/watch?v=Gyk5F5gYKzY", {
-    convertYouTubeMusic: true
+    convertYouTubeMusic: true,
     shortenYouTube: true
 })
 ```
