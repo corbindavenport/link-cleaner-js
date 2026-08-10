@@ -41,12 +41,16 @@
   "license": "MIT",
   "author": "Corbin Davenport <corbindavenport@outlook.com> (https://corbin.io)",
   "type": "module",
-  "main": "src/main.js",
+  "main": "dist/linkcleaner.js",
   "scripts": {
     "test": "node src/cli.js 'https://youtu.be/21oks06J5Wk?si=uQ9j2Wfxnh8dkDFQ&t=75'",
     "build": "npx rollup -c"
   },
   "devDependencies": {
+    "@babel/core": "7.26.0",
+    "@babel/preset-env": "7.26.0",
+    "@rollup/plugin-babel": "7.1.0",
+    "@rollup/plugin-node-resolve": "16.0.3",
     "@rollup/plugin-terser": "1.0.0",
     "rollup": "4.62.4"
   }

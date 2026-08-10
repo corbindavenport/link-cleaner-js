@@ -98,7 +98,9 @@ Run `linkcleaner -h` to see all available options.
 
 ## How to install the JS library
 
-The Link Cleaner library is an extension of the [native URL interface](https://developer.mozilla.org/en-US/docs/Web/API/URL), so it's a small package (~4KB minified) and has no dependencies.
+The Link Cleaner library is an extension of the [native URL interface](https://developer.mozilla.org/en-US/docs/Web/API/URL), so it's a small package (~5KB minified) and has no dependencies.
+
+**Current compatibility**: [> 0.15%, not dead, maintained node versions](https://browsersl.ist/#q=%3E+0.15%25%2C+not+dead%2C+maintained+node+versions)
 
 For local project installation, you can use NPM:
 
