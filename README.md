@@ -96,13 +96,23 @@ Run `linkcleaner -h` to see all available options.
 
 ## How to install Link Cleaner JS
 
+The Link Cleaner library is an extension of the [native URL interface](https://developer.mozilla.org/en-US/docs/Web/API/URL), so it's a small package (~4KB minified) and has no dependencies.
+
 For local project installation, you can use NPM:
 
 ```
 npm install link-cleaner-js
 ```
 
-Then, import it with CommonJS or ES Modules:
+For static web pages or web apps, copy the `linkcleaner.js` or `linkcleaner.min.js` scripts in the `dist` directory to your project, or use a CDN like this:
+
+```html
+<script src="https://unpkg.com/link-cleaner-js@0.2.0/dist/linkcleaner.min.js"></script>
+```
+
+## How to use Link Cleaner JS
+
+First, import the library in your script, using `require` for CommonJS projects or `import` for ES Modules projects:
 
 ```js
 // CommonJS
@@ -111,17 +121,9 @@ const linkCleaner = require("link-cleaner-js");
 import * as linkCleaner from "link-cleaner-js";
 ```
 
-For a website environment, copy the `linkcleaner.js` or `linkcleaner.min.js` scripts in the `dist` directory to your project, or use a CDN like this:
+For a regular web page or web app, you just need `linkcleaner.js` or `linkcleaner.min.js` in a script tag placed before your main script in the HTML structure, then call it with `linkCleaner.clean()`. 
 
-```html
-<script src="https://unpkg.com/link-cleaner-js@0.2.0/dist/linkcleaner.min.js"></script>
-```
-
-## How to use Link Cleaner JS
-
-The Link Cleaner library is an extension of the [native JS URL interface](https://developer.mozilla.org/en-US/docs/Web/API/URL), so it's a small package (~4KB minified) and has no dependencies.
-
-You can pass it a link as either a string or a URL object:
+The basic `clean()` function accepts either a string or a URL object:
 
 ```js
 let urlObj = new URL("http://example.com?a=123");
@@ -147,7 +149,7 @@ let link = linkCleaner.clean("https://music.youtube.com/watch?v=Gyk5F5gYKzY", {
 })
 ```
 
-There is also an `cleanAsync` function, which attempts to un-shorten the input URL first, then cleans the result. This is required for `bit.ly` URLs, Reddit's `/s` post links, and other URLs that completely obscure the destination:
+There is also a `cleanAsync()` function, which attempts to un-shorten the input URL first, then cleans the result. This is required for `bit.ly` URLs, Reddit's `/s` post links, and other URLs that completely obscure the destination:
 
 ```js
 let link = linkCleaner.clean("https://www.reddit.com/r/vscode/s/y8wM23uuT3");
@@ -157,4 +159,4 @@ let link = linkCleaner.cleanAsync("https://www.reddit.com/r/vscode/s/y8wM23uuT3"
 // Output: https://www.reddit.com/r/vscode/comments/1uxx68q/visual_studio_code_1129_release_notes/
 ```
 
-The `cleanAsync` function requires a GET request to the URL, so it will not work in a standard web browser due to [CORS restrictions](https://developer.mozilla.org/en-US/docs/Web/HTTP/Guides/CORS). You can use it in a WebExtension (with permissions for the input domain) or Node project, though.
+The `cleanAsync()` function requires a GET request to the URL, so it will not work in a standard web browser due to [CORS restrictions](https://developer.mozilla.org/en-US/docs/Web/HTTP/Guides/CORS). You can use it in a WebExtension (with permissions for the input domain) or Node project, though.
