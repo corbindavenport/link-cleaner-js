@@ -17,12 +17,27 @@ export default {
         })
     ],
     output: [
+        // ES Module (For modern bundlers like Vite, Webpack, Rollup)
+        {
+            file: "dist/linkcleaner.mjs",
+            format: "es",
+            sourcemap: true
+        },
+        // CommonJS (For Node.js and older bundlers)
+        {
+            file: "dist/linkcleaner.cjs",
+            format: "cjs",
+            sourcemap: true,
+            exports: "auto"
+        },
+        // IIFE (For direct <script> tag usage in browsers)
         {
             file: "dist/linkcleaner.js",
             format: "iife",
             sourcemap: true,
             name: "linkCleaner"
         },
+        // Minified IIFE
         {
             file: 'dist/linkcleaner.min.js',
             format: 'iife',
@@ -31,5 +46,4 @@ export default {
             plugins: [terser()]
         }
     ]
-
 };
