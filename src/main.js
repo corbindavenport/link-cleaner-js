@@ -219,7 +219,6 @@ export async function cleanAsync(link, linkSettings) {
     } catch (error) {
         throw error;
     }
-    console.log(response)
     finalLink = response.url;
     // Try to parse HTML from response for additional checks
     let result = "";
