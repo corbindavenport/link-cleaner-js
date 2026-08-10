@@ -94,9 +94,34 @@ echo "http://example.com?a=123" | linkcleaner
 
 Run `linkcleaner -h` to see all available options.
 
+## How to install Link Cleaner JS
+
+For local project installation, you can use NPM:
+
+```
+npm install link-cleaner-js
+```
+
+Then, import it with CommonJS or ES Modules:
+
+```js
+// CommonJS
+const linkCleaner = require("link-cleaner-js");
+// ES Modules
+import * as linkCleaner from "link-cleaner-js";
+```
+
+For a website environment, copy the `linkcleaner.js` or `linkcleaner.min.js` scripts in the `dist` directory to your project, or use a CDN like this:
+
+```html
+<script src="https://unpkg.com/link-cleaner-js@0.2.0/dist/linkcleaner.min.js"></script>
+```
+
 ## How to use Link Cleaner JS
 
-The Link Cleaner library is an extension of the [native JS URL interface](https://developer.mozilla.org/en-US/docs/Web/API/URL). You can pass it a link as either a string or a URL object:
+The Link Cleaner library is an extension of the [native JS URL interface](https://developer.mozilla.org/en-US/docs/Web/API/URL), so it's a small package (~4KB minified) and has no dependencies.
+
+You can pass it a link as either a string or a URL object:
 
 ```js
 let urlObj = new URL("http://example.com?a=123");
