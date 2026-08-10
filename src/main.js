@@ -6,6 +6,7 @@
  * @property {boolean} [fixTwitter] - If posts from Twitter/X should be converted to FxEmbed links. More information: https://github.com/FxEmbed/FxEmbed
  * @property {boolean} [fixBluesky] - If posts from Bluesky should be converted to FxEmbed links. More information: https://github.com/FxEmbed/FxEmbed
  * @property {string} [amazonId] - The Amazon affiliate tracking ID added to the end of any Amazon store links. More information: https://affiliate-program.amazon.com/help/node/topic/GK5TZZ4AWML2QSLA
+ * @property {Headers} [headers] - HTTP headers object used for GET requests. Only used for `cleanAsync()`.
  */
 
 /**
@@ -187,6 +188,9 @@ export function clean(link, linkSettings) {
         if (productID) {
             newLink.pathname = '/ip/' + productID[1];
         }
+    } else if ((oldLink.host === "www.reddit.com") && oldLink.pathname.includes("media") && oldLink.searchParams.has("url")) {
+        // Don't remove url parameter from Reddit media links
+        newLink.searchParams.append("url", oldLink.searchParams.get("url"))
     }
     // Return the output
     return newLink;
@@ -204,13 +208,18 @@ export async function cleanAsync(link, linkSettings) {
     // Follow network request
     let response, finalLink;
     try {
-        response = await fetch(link, { method: "GET" });
+        const options = { method: "GET" };
+        if (linkSettings?.headers) {
+            options.headers = linkSettings.headers;
+        }
+        response = await fetch(link, options);
         if (!response.ok) {
             throw new Error(`HTTP Error: ${response.status} ${response.statusText}`);
         }
     } catch (error) {
         throw error;
     }
+    console.log(response)
     finalLink = response.url;
     // Try to parse HTML from response for additional checks
     let result = "";

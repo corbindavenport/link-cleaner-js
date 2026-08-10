@@ -1,14 +1,16 @@
 # Link Cleaner JS & Link Cleaner CLI
 
-Link Cleaner JS is a JavaScript library for removing tracking identifiers, extra parameters, and other unnecessary data from URLs. In some environments, it can also un-shorten a link and retrieve the original version of a Google AMP page.
+[Link Cleaner JS](#how-to-install-the-js-library) is a JavaScript library for removing tracking identifiers, extra parameters, and other unnecessary data from URLs. In some environments, it can also un-shorten a link and retrieve the original version of a Google AMP page.
 
-This package also includes a command-line interface for cleaning URLs, using the Node.js runtime on Windows, macOS, and Linux. The library is primarily designed for the [Link Cleaner web app](https://github.com/corbindavenport/link-cleaner).
+[Link Cleaner CLI](#how-to-install-the-cli) is a command-line application that uses the JavaScript library in a Node.js runtime, allowing you to clean and un-shorten links on any Windows, macOS, or Linux system. It can be used in a terminal, or easily integrated into Bash scripts and other automations.
+
+This library is primarily built for the [Link Cleaner web app](https://github.com/corbindavenport/link-cleaner).
 
 **This is a work in progress!**
 
-![Link Cleaner NPM version](https://img.shields.io/npm/v/link-cleaner-js) ![Link Cleaner download count](https://img.shields.io/npm/d18m/link-cleaner-js)
+![NPM version](https://img.shields.io/npm/v/link-cleaner-js) ![NPM weekly downloads](https://img.shields.io/npm/dw/link-cleaner-js) ![NPM downloads for all time](https://img.shields.io/npm/d18m/link-cleaner-js)
 
-## How to install Link Cleaner CLI
+## How to install the CLI
 
 Link Cleaner CLI works on Windows, macOS, and Linux with the Node.js runtime.
 
@@ -66,7 +68,7 @@ npm install -g link-cleaner-js
 
 You can run `linkcleaner -h` to verify Link Cleaner is installed.
 
-## How to use Link Cleaner CLI
+## How to use the CLI
 
 The basic usage is running the `linkcleaner` command with the URL in quotes, like this:
 
@@ -86,15 +88,15 @@ For un-shortening links, like `bit.ly` URLs or Reddit's `/s` post links, use the
 linkcleaner -u "https://www.reddit.com/r/vscode/s/y8wM23uuT3"
 ```
 
-You can also pipe the input URL, like this:
+You can also use pipes. This example on macOS will read a URL from the clipboard, unshorten and clean it, then copy the result to the clipboard:
 
 ```sh
-echo "http://example.com?a=123" | linkcleaner
+pbpaste | linkcleaner -u | pbcopy
 ```
 
 Run `linkcleaner -h` to see all available options.
 
-## How to install Link Cleaner JS
+## How to install the JS library
 
 The Link Cleaner library is an extension of the [native URL interface](https://developer.mozilla.org/en-US/docs/Web/API/URL), so it's a small package (~4KB minified) and has no dependencies.
 
@@ -110,7 +112,7 @@ For static web pages or web apps, copy the `linkcleaner.js` or `linkcleaner.min.
 <script src="https://unpkg.com/link-cleaner-js@0.2.0/dist/linkcleaner.min.js"></script>
 ```
 
-## How to use Link Cleaner JS
+## How to use the JS library
 
 First, import the library in your script, using `require` for CommonJS projects or `import` for ES Modules projects:
 
@@ -161,4 +163,4 @@ let link = await linkCleaner.cleanAsync("https://www.reddit.com/r/vscode/s/y8wM2
 // Output: https://www.reddit.com/r/vscode/comments/1uxx68q/visual_studio_code_1129_release_notes/
 ```
 
-This will not work in a standard web browser due to [CORS restrictions](https://developer.mozilla.org/en-US/docs/Web/HTTP/Guides/CORS). You can use it in a WebExtension (with permissions for the input domain) or Node project, though.
+This will not work in a standard web browser due to [CORS restrictions](https://developer.mozilla.org/en-US/docs/Web/HTTP/Guides/CORS). It still works in a Node.js project, the background script of a WebExtension (with[host_permissions](https://developer.mozilla.org/en-US/docs/Mozilla/Add-ons/WebExtensions/manifest.json/host_permissions) set to `<all_urls>`), and other runtimes that don't enforce CORS.
