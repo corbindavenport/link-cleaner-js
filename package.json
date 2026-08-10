@@ -1,6 +1,6 @@
 {
   "name": "link-cleaner-js",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "description": "Remove tracking code, search parameters, and other junk from web links.",
   "keywords": [
     "link cleaner",
