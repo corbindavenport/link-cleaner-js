@@ -17,6 +17,16 @@
     "README.md",
     "rollup.config.js"
   ],
+  "funding": [
+    {
+      "type": "patreon",
+      "url": "https://www.patreon.com/corbindavenport"
+    },
+    {
+      "type": "paypal",
+      "url": "https://paypal.me/corbindav"
+    }
+  ],
   "homepage": "https://github.com/corbindavenport/link-cleaner-js#readme",
   "bugs": {
     "url": "https://github.com/corbindavenport/link-cleaner-js/issues"
