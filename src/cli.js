@@ -2,27 +2,6 @@
 
 import { clean, cleanAsync } from "./main.js";
 
-// Headers to use for GET requests, simulating a Google Chrome desktop web browser
-const reqHeaders = new Headers({
-    'Accept-Language': 'en-US,en;q=0.9',
-    'Cache-Control': 'max-age=0',
-    'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/151.0.0.0 Safari/537.36',
-    // User Agent Client Hints
-    'Sec-Ch-Ua': '"Not=A?Brand";v="99", "Google Chrome";v="151", "Chromium";v="151"',
-    'Sec-Ch-Ua-Arch': '"x86"',
-    'Sec-Ch-Ua-Bitness': '"64"',
-    'Sec-Ch-Ua-Full-Version': '"151.0.7922.109"',
-    'Sec-Ch-Ua-Full-Version-List': '"Not=A?Brand";v="99.0.0.0", "Google Chrome";v="151.0.7922.109", "Chromium";v="151.0.7922.109"',
-    'Sec-Ch-Ua-Mobile': '?0',
-    'Sec-Ch-Ua-Model': '""',
-    'Sec-Ch-Ua-Platform': '"Windows"',
-    'Sec-Ch-Ua-Platform-Version': '"19.0.0"',
-    'Sec-Fetch-Dest': 'document',
-    'Sec-Fetch-Mode': 'navigate',
-    'Sec-Fetch-Site': 'same-origin',
-    'Sec-Fetch-User': '?1',
-});
-
 /**
  * Show help information in the console.
  */
@@ -100,8 +79,7 @@ async function main() {
         convertYouTubeMusic: (argList.includes("-m") || argList.includes("--ytmusic") || false),
         shortenYouTube: (argList.includes("-y") || argList.includes("--ytshorten") || false),
         fixTwitter: (argList.includes("-t") || argList.includes("--twitter") || false),
-        fixBluesky: (argList.includes("-b") || argList.includes("--bluesky") || false),
-        headers: reqHeaders
+        fixBluesky: (argList.includes("-b") || argList.includes("--bluesky") || false)
     }
     if (argList.includes("-h") || argList.includes("--help")) {
         // Show help

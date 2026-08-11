@@ -6,7 +6,6 @@
  * @property {boolean} [fixTwitter] - If posts from Twitter/X should be converted to FxEmbed links. More information: https://github.com/FxEmbed/FxEmbed
  * @property {boolean} [fixBluesky] - If posts from Bluesky should be converted to FxEmbed links. More information: https://github.com/FxEmbed/FxEmbed
  * @property {string} [amazonId] - The Amazon affiliate tracking ID added to the end of any Amazon store links. More information: https://affiliate-program.amazon.com/help/node/topic/GK5TZZ4AWML2QSLA
- * @property {Headers} [headers] - HTTP headers object used for GET requests. Only used for `cleanAsync()`.
  */
 
 /**
@@ -206,32 +205,25 @@ export function clean(link, linkSettings) {
  */
 export async function cleanAsync(link, linkSettings) {
     // Follow network request
-    let response, finalLink;
+    let response, finalLink, responseHtml;
     try {
-        const options = { method: "GET" };
-        if (linkSettings?.headers) {
-            options.headers = linkSettings.headers;
-        }
-        response = await fetch(link, options);
-        if (!response.ok) {
-            throw new Error(`HTTP Error: ${response.status} ${response.statusText}`);
-        }
+        response = await fetch(link, { method: "GET" });
+        // Even if it returns an HTTP error, the URL might still be unshortened
+        finalLink = response.url;
     } catch (error) {
         throw error;
     }
-    finalLink = response.url;
     // Try to parse HTML from response for additional checks
-    let result = "";
-    if (response.headers.get("content-type").toLowerCase().startsWith("text/html")) {
+    if (response.ok && response.headers.get("content-type").toLowerCase().startsWith("text/html")) {
         try {
-            result = await response.text();
+            responseHtml = await response.text();
             // Get the original URL for Accelerated Mobile Pages (AMP)
             // Documentation: https://amp.dev/documentation/guides-and-tutorials/learn/spec/amphtml
             const ampRegex = /<html ⚡|<html amp/i;
-            if (ampRegex.exec(result)) {
+            if (ampRegex.exec(responseHtml)) {
                 // Find href attribute value in <link rel="canonical"> tag
                 const canonicalRegex = /href\s*=\s*(?:["']([^"']*?)["']|([^\s>]+))/i;
-                const match = canonicalRegex.exec(result);
+                const match = canonicalRegex.exec(responseHtml);
                 if (match) {
                     finalLink = match[1] || match[2];
                 }
