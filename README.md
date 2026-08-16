@@ -1,6 +1,6 @@
 # Link Cleaner JS & Link Cleaner CLI
 
-[Link Cleaner JS](#how-to-install-the-js-library) is a JavaScript library for removing tracking identifiers, extra parameters, and other unnecessary data from URLs. In some environments, it can also un-shorten a link and retrieve the original version of a Google AMP page.
+[Link Cleaner JS](#how-to-install-the-js-library) is a JavaScript library for removing tracking variables and other unnecessary junk from URLs. In environments without CORS restrictions, it can also un-shorten links like `bit.ly` URLs.
 
 [Link Cleaner CLI](#how-to-install-the-cli) is a command-line application that uses the JavaScript library in a Node.js runtime, allowing you to clean and un-shorten links on any Windows, macOS, or Linux system. It can be used in a terminal, or easily integrated into Bash scripts and other automations.
 
@@ -9,6 +9,27 @@ This library is primarily built for the [Link Cleaner web app](https://github.co
 **This is a work in progress!**
 
 ![NPM version](https://img.shields.io/npm/v/link-cleaner-js) ![NPM weekly downloads](https://img.shields.io/npm/dw/link-cleaner-js) ![NPM downloads for all time](https://img.shields.io/npm/d18m/link-cleaner-js)
+
+## The technical details
+
+Link Cleaner works by removing all parameters from a given URL, excluding the `q` parameter typically used for the current search query, then adds back any parameters known to be required for the current domain or URL path.
+
+For example, a video shared from YouTube might have a link like this:
+
+```url
+https://www.youtube.com/watch?v=wAUK9hVgmNI&si=nd8_1Ne2bf&t=20
+```
+
+Link Cleaner preserves the `v` parameter for the video ID, and the `t` parameter for the current timestamp, while deleting the `si` parameter used as a tracking variable:
+
+```url
+https://www.youtube.com/watch?v=wAUK9hVgmNI&t=20
+```
+
+If a page requires parameters other than `q` to load, and Link Cleaner does not already have an override for it, the cleaned link will not work. Please [create issues for broken domains/links](https://github.com/corbindavenport/link-cleaner-js/issues) so they can be fixed.
+
+In the asynchronous cleaning mode, Link Cleaner makes a `GET` request to the provided link to follow any redirects, then cleans the final resolved URL.
+
 
 ## How to install the CLI
 
@@ -165,4 +186,4 @@ let link = await linkCleaner.cleanAsync("https://www.reddit.com/r/vscode/s/y8wM2
 // Output: https://www.reddit.com/r/vscode/comments/1uxx68q/visual_studio_code_1129_release_notes/
 ```
 
-This will not work in a standard web browser due to [CORS restrictions](https://developer.mozilla.org/en-US/docs/Web/HTTP/Guides/CORS). It still works in a Node.js project, the background script of a WebExtension (with[host_permissions](https://developer.mozilla.org/en-US/docs/Mozilla/Add-ons/WebExtensions/manifest.json/host_permissions) set to `<all_urls>`), and other runtimes that don't enforce CORS.
+This will not work in a standard web browser due to [CORS restrictions](https://developer.mozilla.org/en-US/docs/Web/HTTP/Guides/CORS). You can use it in a Node.js project, the background script of a WebExtension (with [host_permissions](https://developer.mozilla.org/en-US/docs/Mozilla/Add-ons/WebExtensions/manifest.json/host_permissions) set to `<all_urls>`), and other runtimes that don't enforce CORS.

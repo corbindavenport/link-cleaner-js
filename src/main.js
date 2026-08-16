@@ -8,13 +8,6 @@
  * @property {string} [amazonId] - The Amazon affiliate tracking ID added to the end of any Amazon store links. More information: https://affiliate-program.amazon.com/help/node/topic/GK5TZZ4AWML2QSLA
  */
 
-/**
- * Defines the standardized output structure.
- * @typedef {Object} CleanedLinkOutput
- * @property {string} urlString - The cleaned URL as a string.
- * @property {URL} urlObject - The cleaned URL as a native JavaScript URL object.
- */
-
 // List of YouTube and YouTube Music domains
 const youtubeDomains = [
     "www.youtube.com",
@@ -212,25 +205,6 @@ export async function cleanAsync(link, linkSettings) {
         finalLink = response.url;
     } catch (error) {
         throw error;
-    }
-    // Try to parse HTML from response for additional checks
-    if (response.ok && response.headers.get("content-type").toLowerCase().startsWith("text/html")) {
-        try {
-            responseHtml = await response.text();
-            // Get the original URL for Accelerated Mobile Pages (AMP)
-            // Documentation: https://amp.dev/documentation/guides-and-tutorials/learn/spec/amphtml
-            const ampRegex = /<html ⚡|<html amp/i;
-            if (ampRegex.exec(responseHtml)) {
-                // Find href attribute value in <link rel="canonical"> tag
-                const canonicalRegex = /href\s*=\s*(?:["']([^"']*?)["']|([^\s>]+))/i;
-                const match = canonicalRegex.exec(responseHtml);
-                if (match) {
-                    finalLink = match[1] || match[2];
-                }
-            }
-        } catch {
-            // Fail silently and continue with the original URL
-        }
     }
     // Clean the link
     return clean(finalLink, linkSettings);
