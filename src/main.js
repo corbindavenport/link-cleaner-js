@@ -194,7 +194,7 @@ export function clean(link, linkSettings) {
  * This requires a Fetch request to the original URL, so it will not work in environments that enforce Cross-Origin Resource Sharing (CORS).
  * @param {string | URL} link - The URL input, either as a string or a URL object.
  * @param {LinkSettings} [linkSettings] - Settings for cleaning the link.
- * @returns {URL} The cleaned link as a URL object. Use `.toString()` afterwards to get the full string.
+ * @returns {Promise<URL>} Promise that resolves with the cleaned link as a URL object. Use `.then(url => url.toString())` or await the function call.
  */
 export async function cleanAsync(link, linkSettings) {
     // Follow network request
