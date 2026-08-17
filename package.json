@@ -1,6 +1,6 @@
 {
   "name": "link-cleaner-js",
-  "version": "0.3.0",
+  "version": "0.4.0",
   "description": "Remove tracking code, search parameters, and other junk from web links.",
   "keywords": [
     "link cleaner",
@@ -44,11 +44,12 @@
   "main": "dist/linkcleaner.cjs",
   "module": "dist/linkcleaner.mjs",
   "exports": {
-    ".": {
-      "import": "./dist/linkcleaner.mjs",
-      "require": "./dist/linkcleaner.cjs",
-      "default": "./dist/linkcleaner.mjs"
-    }
+    "import": "./dist/linkcleaner.mjs",
+    "require": "./dist/linkcleaner.cjs",
+    "default": "./dist/linkcleaner.mjs",
+    "unpkg": "./dist/linkcleaner.min.js",
+    "browser": "./dist/linkcleaner.min.js",
+    "jsdelivr": "./dist/linkcleaner.min.js"
   },
   "scripts": {
     "test": "node src/cli.js 'https://youtu.be/21oks06J5Wk?si=uQ9j2Wfxnh8dkDFQ&t=75'",

@@ -133,7 +133,7 @@ npm install link-cleaner-js
 For static web pages or web apps, copy the `linkcleaner.js` or `linkcleaner.min.js` scripts in the `dist` directory to your project, or use a CDN like this:
 
 ```html
-<script src="https://unpkg.com/link-cleaner-js@0.2.0/dist/linkcleaner.min.js"></script>
+<script src="https://unpkg.com/link-cleaner-js@1/dist/linkcleaner.min.js"></script>
 ```
 
 ## How to use the JS library

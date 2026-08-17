@@ -8,14 +8,6 @@
  * @property {boolean} [fixTwitter] - If posts from Twitter/X should be converted to FxEmbed links. More information: https://github.com/FxEmbed/FxEmbed
  * @property {boolean} [fixBluesky] - If posts from Bluesky should be converted to FxEmbed links. More information: https://github.com/FxEmbed/FxEmbed
  * @property {string} [amazonId] - The Amazon affiliate tracking ID added to the end of any Amazon store links. More information: https://affiliate-program.amazon.com/help/node/topic/GK5TZZ4AWML2QSLA
- * @property {Headers} [headers] - HTTP headers object used for GET requests. Only used for `cleanAsync()`.
- */
-
-/**
- * Defines the standardized output structure.
- * @typedef {Object} CleanedLinkOutput
- * @property {string} urlString - The cleaned URL as a string.
- * @property {URL} urlObject - The cleaned URL as a native JavaScript URL object.
  */
 
 // List of YouTube and YouTube Music domains
@@ -173,45 +165,19 @@ function clean(link, linkSettings) {
  * This requires a Fetch request to the original URL, so it will not work in environments that enforce Cross-Origin Resource Sharing (CORS).
  * @param {string | URL} link - The URL input, either as a string or a URL object.
  * @param {LinkSettings} [linkSettings] - Settings for cleaning the link.
- * @returns {URL} The cleaned link as a URL object. Use `.toString()` afterwards to get the full string.
+ * @returns {Promise<URL>} Promise that resolves with the cleaned link as a URL object. Use `.then(url => url.toString())` or await the function call.
  */
 async function cleanAsync(link, linkSettings) {
   // Follow network request
   let response, finalLink;
   try {
-    const options = {
+    response = await fetch(link, {
       method: "GET"
-    };
-    if (linkSettings?.headers) {
-      options.headers = linkSettings.headers;
-    }
-    response = await fetch(link, options);
-    if (!response.ok) {
-      throw new Error(`HTTP Error: ${response.status} ${response.statusText}`);
-    }
+    });
+    // Even if it returns an HTTP error, the URL might still be unshortened
+    finalLink = response.url;
   } catch (error) {
     throw error;
-  }
-  finalLink = response.url;
-  // Try to parse HTML from response for additional checks
-  let result = "";
-  if (response.headers.get("content-type").toLowerCase().startsWith("text/html")) {
-    try {
-      result = await response.text();
-      // Get the original URL for Accelerated Mobile Pages (AMP)
-      // Documentation: https://amp.dev/documentation/guides-and-tutorials/learn/spec/amphtml
-      const ampRegex = /<html ⚡|<html amp/i;
-      if (ampRegex.exec(result)) {
-        // Find href attribute value in <link rel="canonical"> tag
-        const canonicalRegex = /href\s*=\s*(?:["']([^"']*?)["']|([^\s>]+))/i;
-        const match = canonicalRegex.exec(result);
-        if (match) {
-          finalLink = match[1] || match[2];
-        }
-      }
-    } catch {
-      // Fail silently and continue with the original URL
-    }
   }
   // Clean the link
   return clean(finalLink, linkSettings);
