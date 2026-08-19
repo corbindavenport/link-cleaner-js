@@ -6,8 +6,6 @@
 
 This library is primarily built for the [Link Cleaner web app](https://github.com/corbindavenport/link-cleaner).
 
-**This is a work in progress!**
-
 ![NPM version](https://img.shields.io/npm/v/link-cleaner-js) ![NPM weekly downloads](https://img.shields.io/npm/dw/link-cleaner-js) ![NPM downloads for all time](https://img.shields.io/npm/d18m/link-cleaner-js) ![jsDelivr weekly hits](https://img.shields.io/jsdelivr/npm/hw/link-cleaner-js
 )
 
