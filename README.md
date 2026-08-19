@@ -114,7 +114,7 @@ You can also use pipes. This example on macOS will read a URL from the clipboard
 pbpaste | linkcleaner -u | pbcopy
 ```
 
-Run `linkcleaner -h` to see all available options.
+Run `linkcleaner -h` to see all available options. You can run `npm update -g` to install any available updates.
 
 ## How to install the JS library
 
