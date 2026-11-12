@@ -90,7 +90,8 @@ async function main() {
         // Unshorten and clean the link
         try {
             const link = await cleanAsync(inputLink, options);
-            showDecoded ? console.log(decodeURI(link.href)) : console.log(link.href);
+            const decodedLink = decodeURI(link.href).replace(" ", "%20");
+            showDecoded ? console.log(decodedLink) : console.log(link.href);
         } catch (e) {
             console.log(e.message);
             process.exit(1);
@@ -99,7 +100,8 @@ async function main() {
         // Clean the link without unshortening
         try {
             const link = clean(inputLink, options);
-            showDecoded ? console.log(decodeURI(link.href)) : console.log(link.href);
+            const decodedLink = decodeURI(link.href).replace(" ", "%20");
+            showDecoded ? console.log(decodedLink) : console.log(link.href);
         } catch (e) {
             console.log(e.message);
             process.exit(1);
