@@ -198,7 +198,7 @@ export function clean(link, linkSettings) {
  */
 export async function cleanAsync(link, linkSettings) {
     // Follow network request
-    let response, finalLink, responseHtml;
+    let response, finalLink;
     try {
         response = await fetch(link, { method: "GET" });
         // Even if it returns an HTTP error, the URL might still be unshortened

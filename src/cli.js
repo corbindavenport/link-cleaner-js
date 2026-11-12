@@ -15,6 +15,7 @@ Usage: linkcleaner [options...] <url>
  -y, --ytshorten   Shorten all YouTube links to youtu.be URLs
  -t, --twitter     Convert Twitter/X links to FxEmbed links
  -b, --bluesky     Convert Bluesky links to FxEmbed links
+ -d, --decode      Decodes the URL, making non-Latin characters readable
  -h, --help        Show this help page
 
 More info: https://github.com/corbindavenport/link-cleaner-js
@@ -81,6 +82,7 @@ async function main() {
         fixTwitter: (argList.includes("-t") || argList.includes("--twitter") || false),
         fixBluesky: (argList.includes("-b") || argList.includes("--bluesky") || false)
     }
+    let showDecoded = argList.includes("-d") || argList.includes("--decode");
     if (argList.includes("-h") || argList.includes("--help")) {
         // Show help
         showHelp();
@@ -88,7 +90,7 @@ async function main() {
         // Unshorten and clean the link
         try {
             const link = await cleanAsync(inputLink, options);
-            console.log(link.toString());
+            showDecoded ? console.log(decodeURI(link.href)) : console.log(link.href);
         } catch (e) {
             console.log(e.message);
             process.exit(1);
@@ -97,7 +99,7 @@ async function main() {
         // Clean the link without unshortening
         try {
             const link = clean(inputLink, options);
-            console.log(link.toString());
+            showDecoded ? console.log(decodeURI(link.href)) : console.log(link.href);
         } catch (e) {
             console.log(e.message);
             process.exit(1);
